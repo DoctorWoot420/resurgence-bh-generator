@@ -39,7 +39,7 @@ def generate_config():
         base_content = base_response.text
 
         # Fetch rune design block file
-        if rune_design_param == 'cosmic-rainbow':
+        if rune_design_param == 'Cosmic Rainbow': #Should better prepare this param value - will do later though
             rune_design_block_url = "https://raw.githubusercontent.com/DoctorWoot420/cosmic-resurgence-bh/main/filter-blocks/runes-cosmic-rainbow.bh"
         else:
             rune_design_block_url = "https://raw.githubusercontent.com/DoctorWoot420/cosmic-resurgence-bh/main/filter-blocks/runes-classic.bh"
