@@ -31,6 +31,9 @@ def generate_config():
         if invalid_blocks:
             return jsonify({"error": f"Invalid filter_blocks parameter: {', '.join(invalid_blocks)}"}), 400
 
+        # Access the verboseItemNames flag
+        verbose_item_names = data.get('verboseItemNames', False)
+
         # Fetch base file
         base_url = "https://raw.githubusercontent.com/DoctorWoot420/cosmic-resurgence-bh/main/BH.cfg"
         base_response = requests.get(base_url)
@@ -96,6 +99,9 @@ def generate_config():
         merged_lines = base_lines[:filter_blocks_insert_index] + unique_block_content + base_lines[filter_blocks_insert_index:rune_design_insert_index] + rune_design_block_content.splitlines() + base_lines[rune_design_insert_index:]
         merged_content = "\n".join(merged_lines)
 
+        # Process item names based on verboseItemNames flag
+        merged_content = process_item_names(merged_content, verbose_item_names)
+
         return jsonify({"config": merged_content}), 200
     except requests.RequestException as e:
         logging.error(f"Network error: {str(e)}")
@@ -126,6 +132,30 @@ def clean_up_junk_lines(lines):
             blank_line_allowed = True  # Reset to allow a blank line after content
 
     return cleaned_lines
+
+def process_item_names(content, verbose_item_names):
+    lines = content.split('\n')
+    processed_lines = []
+    
+    for line in lines:
+        if 'ItemDisplay[' in line and ':' in line:
+            # Split at the colon to separate conditions from actions
+            parts = line.split(':', 1)
+            conditions = parts[0]
+            actions = parts[1] if len(parts) > 1 else ""
+            
+            if verbose_item_names:
+                # Remove pipes only
+                actions = re.sub(r'\|', '', actions)
+            else:
+                # Replace text between pipes with %NAME%
+                actions = re.sub(r'\|[^|]*\|', '%NAME%', actions)
+            
+            processed_lines.append(conditions + ':' + actions)
+        else:
+            processed_lines.append(line)
+    
+    return '\n'.join(processed_lines)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
