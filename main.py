@@ -27,7 +27,7 @@ def generate_config():
         
         # Access the item_names flag in a case-insensitive manner
         item_names_param = data.get('item_names', '').lower()
-        if rune_design_param not in ['default', 'cosmic info']:
+        if item_names_param not in ['default', 'cosmic info']:
             return jsonify({"error": "Invalid item_names parameter"}), 400
         verbose_item_names = (item_names_param == 'cosmic info')
         
