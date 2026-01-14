@@ -25,14 +25,17 @@ def generate_config():
         if rune_design_param not in ['cosmic rainbow', 'classic']:
             return jsonify({"error": "Invalid rune_design parameter"}), 400
         
+        # Access the item_names flag in a case-insensitive manner
+        item_names_param = data.get('item_names', '').lower()
+        if rune_design_param not in ['default', 'cosmic info']:
+            return jsonify({"error": "Invalid item_names parameter"}), 400
+        verbose_item_names = (item_names_param == 'cosmic info')
+        
         # Access the filter_blocks key in a case-insensitive manner
         filter_blocks_param = data.get('filter_blocks', [])
         invalid_blocks = [block for block in filter_blocks_param if block.lower() not in ['sorceress', 'paladin', 'necromancer', 'amazon', 'assassin', 'barbarian', 'druid', 'leveling']]
         if invalid_blocks:
             return jsonify({"error": f"Invalid filter_blocks parameter: {', '.join(invalid_blocks)}"}), 400
-
-        # Access the verboseItemNames flag
-        verbose_item_names = data.get('verboseItemNames', False)
 
         # Fetch base file
         base_url = "https://raw.githubusercontent.com/DoctorWoot420/cosmic-resurgence-bh/main/BH.cfg"
